@@ -1,0 +1,16 @@
+# Global build configuration (applies to all targets)
+[build]
+target = "thumbv7em-none-eabihf"
+
+# Configuration specific to our target triple (the CPU architecture)
+[target.thumbv7em-none-eabihf]
+# Defines the tool used to flash and run the program (we use probe-rs)
+runner = "probe-rs run --chip STM32F446RETx"
+rustflags = [
+  # Tells the linker to use the custom linker script in the project root
+  "-C", "link-arg=-Tlink.x", 
+]
+
+# This is often used as a fallback but mirrors the main target settings here
+[target.'cfg(all(target_arch = "arm", target_os = "none"))']
+runner = "probe-rs run --chip STM32F446RETx"

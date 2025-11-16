@@ -1,0 +1,61 @@
+# ====================================================================
+# Project: nucleo-f446re-blinky
+# Target: STM32F446RETx (Nucleo-F446RE board)
+# Status: Successfully Compiles and Runs!
+# ====================================================================
+
+[package]
+name = "nucleo-f446re-blinky"
+version = "0.1.0"
+authors = ["Antony Mapfumo <mapfumo@icloud.com>"]
+edition = "2021"
+
+[dependencies]
+# 1. Essential Core Crates
+# ---
+# These crates provide the minimal necessary abstractions for running on a bare-metal ARM Cortex-M CPU.
+
+# Architecture access (register manipulation, intrinsics)
+cortex-m = "0.7.5" 
+# Minimal runtime/startup code (defines the `entry` point)
+# Fixed version to "0.7.5" to resolve the `failed to select a version` error.
+cortex-m-rt = "0.7.5" 
+# Defines the panic handler (it halts the CPU on error, required for no_std).
+panic-halt = "0.2.0" 
+
+# 2. Interface Standards
+# ---
+# Defines common peripheral traits (e.g., OutputPin, Delay) implemented by the HAL.
+embedded-hal = "0.2.7"
+
+# 3. Time/Frequency Crate (Critical for Fixes)
+# ---
+# The core library that defines time and rate types.
+# Explicitly including this guarantees the HAL's time traits can be resolved.
+fugit = "0.3.7" 
+
+# 4. Device-Specific HAL
+# ---
+# The Hardware Abstraction Layer for the STM32F4 family.
+# "stm32f446" feature flag selects your exact MCU.
+stm32f4xx-hal = { version = "0.20.0", features = ["stm32f446"] } 
+
+
+
+# ====================================================================
+# Build & Link Configuration (Typically in .cargo/config.toml)
+# ====================================================================
+# NOTE: The settings below tell Cargo how to build for the embedded target.
+
+[profile.dev]
+codegen-units = 1
+debug = 2
+incremental = false 
+overflow-checks = true 
+
+[profile.release]
+codegen-units = 1
+debug = 2
+incremental = false
+lto = "fat" # Link Time Optimization: Maximizes size reduction and speed
+overflow-checks = false
