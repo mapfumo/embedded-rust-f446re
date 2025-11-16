@@ -1,0 +1,512 @@
+<!-- Chosen Color Palette: Brilliant Blues (Primary: #1B2A41, Accent: #41C2FF, Background: #F0F4F8) -->
+<!-- Plan Narrative & Structure: 1. Header & Core Metrics. 2. Section I: Core Layer (Cards). 3. Section II: Interface Layer (Cards). 4. Section III: Dependency Flow Diagram (HTML/CSS). 5. Section IV: Abstraction Comparison (Bar Chart). 6. Conclusion (Imports Summary). -->
+<!-- Visualization Choices: Info Cards (Organize), Custom Pyramid/Stack (Organize/Relationships - NO SVG/Mermaid), Radar Chart (Relationships), Bar Chart (Comparison). -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Embedded Rust Abstraction Stack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Custom styles for chart containers and core layout colors */
+      :root {
+        --color-primary: #1b2a41; /* Deep Navy */
+        --color-accent: #41c2ff; /* Bright Azure */
+        --color-background: #f0f4f8; /* Light Gray/Blue Tint */
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--color-background);
+        color: var(--color-primary);
+      }
+      .text-accent {
+        color: var(--color-accent);
+      }
+      .bg-accent {
+        background-color: var(--color-accent);
+      }
+      .border-accent {
+        border-color: var(--color-accent);
+      }
+      .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        height: 350px;
+        max-height: 400px;
+      }
+      @media (max-width: 767px) {
+        .chart-container {
+          height: 300px;
+        }
+      }
+
+      /* Styling for the custom stack/pyramid diagram (NO SVG) */
+      .stack-element {
+        min-height: 50px;
+        padding: 10px;
+        text-align: center;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .arrow-down {
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 10px solid var(--color-accent);
+        margin: 0 auto 15px auto;
+      }
+    </style>
+  </head>
+  <body class="p-4 md:p-8">
+    <div id="app" class="max-w-6xl mx-auto">
+      <!-- Header and Core Metrics -->
+      <header class="text-center mb-12 p-8 rounded-xl shadow-lg bg-white">
+        <h1
+          class="text-5xl font-extrabold mb-2"
+          style="color: var(--color-primary)"
+        >
+          The Embedded Rust Abstraction Stack
+        </h1>
+        <p class="text-xl text-gray-600">
+          Understanding the essential crates for bare-metal development on the
+          STM32F446RE.
+        </p>
+      </header>
+
+      <!-- Core Metric Panel -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+          <p class="text-5xl font-bold text-accent">7</p>
+          <p class="text-lg text-gray-700 mt-2">Core Crates Required</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+          <p class="text-5xl font-bold text-accent">1</p>
+          <p class="text-lg text-gray-700 mt-2">Architecture (Cortex-M)</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+          <p class="text-5xl font-bold text-accent">0</p>
+          <p class="text-lg text-gray-700 mt-2">
+            Operating System Dependencies
+          </p>
+        </div>
+      </div>
+
+      <!-- Section I: The Core Layer -->
+      <section class="mb-12">
+        <h2
+          class="text-3xl font-bold mb-6 text-center"
+          style="color: var(--color-primary)"
+        >
+          I. The Core Foundation (Cortex-M)
+        </h2>
+        <p class="text-gray-700 mb-8 max-w-3xl mx-auto text-center">
+          The three fundamental crates establish the environment, handle the
+          startup sequence, and provide access to the CPU's internal machinery,
+          making your `main` function possible.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div
+            class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-accent"
+          >
+            <h3 class="text-xl font-semibold mb-2 text-accent">cortex-m</h3>
+            <p class="text-sm text-gray-600">**Role:** Architecture Access</p>
+            <p class="mt-3 text-sm">
+              Provides safe wrappers to control core peripherals (like the
+              System Timer) and manage critical sections (disabling interrupts).
+              It is the bridge between Rust and the ARM core.
+            </p>
+          </div>
+          <div
+            class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-accent"
+          >
+            <h3 class="text-xl font-semibold mb-2 text-accent">cortex-m-rt</h3>
+            <p class="text-sm text-gray-600">**Role:** The Runtime</p>
+            <p class="mt-3 text-sm">
+              The "startup code." It initializes memory (stack, data, BSS) and
+              defines the interrupt vector table. The `#[entry]` macro confirms
+              where execution begins.
+            </p>
+          </div>
+          <div
+            class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-accent"
+          >
+            <h3 class="text-xl font-semibold mb-2 text-accent">panic-halt</h3>
+            <p class="text-sm text-gray-600">**Role:** Error Handling</p>
+            <p class="mt-3 text-sm">
+              Mandatory for `#![no_std]`. Since unwinding is impossible without
+              an OS, this crate implements the panic handler to safely halt the
+              CPU and prevent undefined behavior.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section II: The Hardware Interface Layer & Comparison Chart -->
+      <section class="mb-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Left: HAL/PAC Cards -->
+        <div>
+          <h2
+            class="text-3xl font-bold mb-6"
+            style="color: var(--color-primary)"
+          >
+            II. Hardware Interface Layer
+          </h2>
+          <p class="text-gray-700 mb-8">
+            These crates transform raw memory addresses into safe, reusable, and
+            portable APIs, forming the bulk of your application's interaction
+            with the STM32F446RE's peripherals (GPIO, Clocks, Timers).
+          </p>
+
+          <!-- PAC Card -->
+          <div
+            class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-gray-400 mb-4"
+          >
+            <h3
+              class="text-xl font-semibold mb-2"
+              style="color: var(--color-primary)"
+            >
+              PAC (`pac`)
+            </h3>
+            <p class="text-sm text-gray-600">**Peripheral Access Crate**</p>
+            <p class="mt-2 text-sm">
+              Machine-generated, low-level interface. Offers direct register
+              access. Fast but unsafe, requiring deep knowledge of the MCU
+              reference manual.
+            </p>
+          </div>
+
+          <!-- HAL Card -->
+          <div
+            class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-accent mb-4"
+          >
+            <h3 class="text-xl font-semibold mb-2 text-accent">
+              HAL (`stm32f4xx-hal`)
+            </h3>
+            <p class="text-sm text-gray-600">**Hardware Abstraction Layer**</p>
+            <p class="mt-2 text-sm">
+              The ergonomic layer. Wraps the PAC into type-safe methods (e.g.,
+              `split()`, `into_push_pull_output()`). This is where most
+              application logic resides.
+            </p>
+          </div>
+
+          <!-- embedded-hal Card -->
+          <div
+            class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500"
+          >
+            <h3 class="text-xl font-semibold mb-2 text-green-600">
+              embedded-hal
+            </h3>
+            <p class="text-sm text-gray-600">**Portability Standard**</p>
+            <p class="mt-2 text-sm">
+              Defines core traits (`OutputPin`, `Delay`). By implementing these,
+              the HAL ensures your Blinky code can be reused on any chip with an
+              `embedded-hal` compliant crate.
+            </p>
+          </div>
+        </div>
+
+        <!-- Right: Abstraction Comparison Chart -->
+        <div class="bg-white p-6 rounded-xl shadow-lg flex flex-col">
+          <h3
+            class="text-2xl font-semibold mb-4 text-center"
+            style="color: var(--color-primary)"
+          >
+            Abstraction vs. Control
+          </h3>
+          <p class="text-gray-700 text-sm mb-4 text-center">
+            A conceptual comparison of the trade-offs between using the raw PAC
+            and the high-level HAL for application development.
+          </p>
+          <div class="chart-container flex-grow">
+            <canvas id="abstractionBarChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section III: The Dependency Flow Diagram (Custom HTML/CSS Stack) -->
+      <section class="mb-12">
+        <h2
+          class="text-3xl font-bold mb-6 text-center"
+          style="color: var(--color-primary)"
+        >
+          III. The Runtime Dependency Stack
+        </h2>
+        <p class="text-gray-700 mb-8 max-w-3xl mx-auto text-center">
+          The diagram below illustrates how your application code relies on the
+          lowest layer (`cortex-m`) to interact with the physical chip. This
+          dependency flow dictates required imports.
+        </p>
+
+        <div class="max-w-xl mx-auto">
+          <!-- Top Layer: Application -->
+          <div class="stack-element bg-accent text-white font-bold text-xl">
+            Application Code (Your Blinky Logic)
+          </div>
+          <div class="arrow-down"></div>
+
+          <!-- Middle Layer: HAL & PAC -->
+          <div class="stack-element bg-white border border-accent">
+            HAL (`stm32f4xx-hal`) & embedded-hal Traits
+          </div>
+          <div class="arrow-down"></div>
+
+          <!-- Lower Layer: Architecture -->
+          <div class="stack-element bg-white border border-gray-400">
+            PAC & cortex-m (The CPU Interface)
+          </div>
+          <div class="arrow-down"></div>
+
+          <!-- Bottom Layer: Hardware -->
+          <div class="stack-element text-gray-800 font-bold bg-gray-300">
+            STM32F446RE Hardware (Registers & Wires)
+          </div>
+        </div>
+      </section>
+
+      <!-- Section IV: Why All Imports Were Critical -->
+      <section class="mb-12">
+        <h2
+          class="text-3xl font-bold mb-6 text-center"
+          style="color: var(--color-primary)"
+        >
+          IV. Project Synthesis: Why You Need Every Import
+        </h2>
+        <p class="text-gray-700 mb-8 max-w-4xl mx-auto text-center">
+          Your successful Blinky project required bringing specific traits into
+          scope from several crates, even ones that look like utility
+          dependencies, confirming the modularity of the ecosystem.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Left: Trait Dependency Radar Chart -->
+          <div class="bg-white p-6 rounded-xl shadow-lg flex flex-col">
+            <h3
+              class="text-2xl font-semibold mb-4 text-center"
+              style="color: var(--color-primary)"
+            >
+              Trait Scope Coverage
+            </h3>
+            <p class="text-gray-700 text-sm mb-4 text-center">
+              How key crates contribute traits that define core functionality
+              (e.g., configuring clocks or pin modes).
+            </p>
+            <div class="chart-container flex-grow">
+              <canvas id="dependencyRadarChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Right: Summary of Critical Imports -->
+          <div class="bg-white p-6 rounded-xl shadow-lg">
+            <h3 class="text-2xl font-semibold mb-4 text-accent">
+              Key Blinky Imports Summary
+            </h3>
+            <ul class="space-y-4 text-sm text-gray-700">
+              <li class="p-3 bg-gray-100 rounded-lg">
+                <span class="font-bold" style="color: var(--color-primary)"
+                  >`hal::prelude::*`</span
+                >: Unlocks basic I/O methods like `.split()` and `.set_low()`.
+              </li>
+              <li class="p-3 bg-gray-100 rounded-lg">
+                <span class="font-bold" style="color: var(--color-primary)"
+                  >`hal::pac`</span
+                >: Grants raw access to device peripherals (`dp.GPIOA`,
+                `dp.RCC`).
+              </li>
+              <li class="p-3 bg-gray-100 rounded-lg">
+                <span class="font-bold" style="color: var(--color-primary)"
+                  >`cortex_m`</span
+                >: Grants access to the Core Peripherals (`cp.SYST`) for time
+                control.
+              </li>
+              <li class="p-3 bg-gray-100 rounded-lg">
+                <span class="font-bold text-accent">`fugit::RateExtU32`</span>:
+                The specific trait that enables the modern frequency literal
+                syntax, **`.MHz()`**, resolving the final compilation error.
+              </li>
+            </ul>
+            <p class="mt-4 text-xs text-gray-500">
+              In Rust, functions and methods are often provided by traits, which
+              must be explicitly imported (`use`) to be accessible.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const PRIMARY_COLOR = "#1B2A41";
+      const ACCENT_COLOR = "#41C2FF";
+
+      function wrapLabel(label) {
+        const maxLen = 16;
+        if (label.length <= maxLen) {
+          return label;
+        }
+        const words = label.split(" ");
+        const lines = [];
+        let currentLine = "";
+
+        for (const word of words) {
+          if (
+            (currentLine + " " + word).length > maxLen &&
+            currentLine !== ""
+          ) {
+            lines.push(currentLine);
+            currentLine = word;
+          } else {
+            currentLine = currentLine === "" ? word : currentLine + " " + word;
+          }
+        }
+        if (currentLine) {
+          lines.push(currentLine);
+        }
+        return lines;
+      }
+
+      function createTooltipTitleCallback() {
+        return {
+          title: function (tooltipItems) {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+              return label.join(" ");
+            } else {
+              return label;
+            }
+          },
+        };
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- 1. Abstraction Comparison Bar Chart (Section II) ---
+        const abstractionCtx = document
+          .getElementById("abstractionBarChart")
+          .getContext("2d");
+        new Chart(abstractionCtx, {
+          type: "bar",
+          data: {
+            labels: [
+              wrapLabel("Abstraction Level"),
+              wrapLabel("Ease of Use"),
+              wrapLabel("Performance Overhead"),
+              wrapLabel("Required Documentation"),
+            ],
+            datasets: [
+              {
+                label: "High-Level HAL",
+                data: [8, 9, 2, 4],
+                backgroundColor: ACCENT_COLOR,
+                borderColor: ACCENT_COLOR,
+                borderWidth: 1,
+              },
+              {
+                label: "Raw PAC",
+                data: [2, 3, 9, 9],
+                backgroundColor: PRIMARY_COLOR,
+                borderColor: PRIMARY_COLOR,
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 10,
+                ticks: {
+                  color: PRIMARY_COLOR,
+                },
+              },
+              x: {
+                ticks: {
+                  color: PRIMARY_COLOR,
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                position: "top",
+                labels: {
+                  color: PRIMARY_COLOR,
+                },
+              },
+              tooltip: createTooltipTitleCallback(),
+            },
+          },
+        });
+
+        // --- 2. Trait Dependency Radar Chart (Section IV) ---
+        const dependencyCtx = document
+          .getElementById("dependencyRadarChart")
+          .getContext("2d");
+        new Chart(dependencyCtx, {
+          type: "radar",
+          data: {
+            labels: [
+              wrapLabel("Portability (embedded-hal)"),
+              wrapLabel("Clock Configuration (RccExt)"),
+              wrapLabel("GPIO Configuration (GpiOExt)"),
+              wrapLabel("Time/Rate Literals (RateExtU32)"),
+              wrapLabel("Core Access (cortex-m)"),
+            ],
+            datasets: [
+              {
+                label: "Required Traits Coverage",
+                data: [10, 8, 8, 6, 7],
+                fill: true,
+                backgroundColor:
+                  "rgba(65, 194, 255, 0.2)" /* ACCENT_COLOR with alpha */,
+                borderColor: ACCENT_COLOR,
+                pointBackgroundColor: ACCENT_COLOR,
+                pointBorderColor: "#fff",
+                pointHoverBackgroundColor: "#fff",
+                pointHoverBorderColor: ACCENT_COLOR,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              r: {
+                angleLines: {
+                  color: "rgba(27, 42, 65, 0.1)" /* Lightened PRIMARY_COLOR */,
+                },
+                grid: {
+                  color: "rgba(27, 42, 65, 0.2)",
+                },
+                pointLabels: {
+                  color: PRIMARY_COLOR,
+                },
+                ticks: {
+                  beginAtZero: true,
+                  display: false,
+                },
+                suggestedMin: 0,
+                suggestedMax: 10,
+              },
+            },
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: createTooltipTitleCallback(),
+            },
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
